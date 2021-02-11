@@ -16,6 +16,7 @@
     var canvas = document.getElementById("canvas")
     var ctx = canvas.getContext("2d")
 
+
     var PlayerPoint = {x : 0, y : 0}
     var otherPlayers = []
     const RADIUS = 15
@@ -30,23 +31,39 @@
     var obstacles
     var id
 
-    var promiseMap = new Promise(function(resolve, reject) {
-        var xhr = new XMLHttpRequest();
-        xhr.onload = function () {
-            if(xhr.readyState === 4) {
-                resolve(xhr.response)
-                let j = JSON.parse(xhr.response)
-                obstacles = j.obstacles
-                id = j.id
-                PlayerPoint = j.player
-                otherPlayers = j.otherPlayers
-            } else {
-                reject(Error(xhr.statusText))
-            }
+    start()
+
+    function start() {
+
+        var u = prompt("Please enter your name", "Harry Potter");
+        if (u != null) {
+            url = u
         }
-        xhr.open('GET', url, true)
-        xhr.send()
-    });
+
+        var promiseMap = new Promise(function(resolve, reject) {
+            var xhr = new XMLHttpRequest();
+            xhr.onload = function () {
+                if(xhr.readyState === 4) {
+                    resolve(xhr.response)
+                    let j = JSON.parse(xhr.response)
+                    obstacles = j.obstacles
+                    id = j.id
+                    PlayerPoint = j.player
+                    otherPlayers = j.otherPlayers
+                } else {
+                    reject(Error(xhr.statusText))
+                }
+            }
+            xhr.open('GET', url, true)
+            xhr.send()
+        });
+
+        promiseMap.then(function() {
+            var intervalUI = setInterval(draw, 10)
+            var intervalNotUI = setInterval(reqwests, 50)
+            // console.log(obstacles)
+        })
+    }
 
 
     function setPayerPoint() {
@@ -91,13 +108,7 @@
                 "dir" : ${gunAngle}}`)
         })
     }
-
-
-    promiseMap.then(function() {
-        var intervalUI = setInterval(draw, 10)
-        var intervalNotUI = setInterval(reqwests, 50)
-        // console.log(obstacles)
-    })  
+  
 
     function reqwests() {
         if(ismoved) {setPayerPoint()}
